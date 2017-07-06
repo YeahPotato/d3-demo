@@ -23,7 +23,10 @@
     <hr>
     <p>QQ Plot</p>
     <div id="demo4"></div>
-
+    <hr>
+    <p>折线图</p>
+    <div id="demo5"></div>
+    <hr>
     <!--wrap-->
     <div id="wrap">
     </div>
@@ -151,6 +154,11 @@
         }
         demo3();
         //QQ plot
+        //window resize表重绘
+        window.addEventListener('resize',function(){
+            d3.select('#demo4').html('');
+            demo4();
+        },false);
         function demo4(){
             var data=[];
             var maskData=[];
@@ -164,7 +172,7 @@
                 data.push(tempObj);
             }
             
-            var width=400;
+            var width=document.querySelector('#demo4').offsetWidth;
             var height=400;
             var padding=30;
             //x比例尺
@@ -237,9 +245,6 @@
                 .attr('data-y',function(d){
                     return d.y
                 })
-                .attr('title',function(d){
-                    return 'Expected -log10:'+d.x+'\nObserved -log10(p):'+d.y
-                })
                 .attr('class','point')
                 .attr('r','4')
                 .attr('fill','#fff')
@@ -257,6 +262,10 @@
                 .on('mouseout',function(){
                     d3.selectAll('.point').attr('stroke','blue');
                 })
+                .append('title')
+                .text(function(d){
+                     return 'Expected -log10:'+d.x+'\nObserved -log10(p):'+d.y
+                })
             //tooltip
             d3.select('#demo4').append('div')
                 .attr('class','tooltip')
@@ -265,7 +274,17 @@
             //原点
             //oSvg.append('circle').attr('r',10).attr('cx',xScale(0)).attr('cy',yScale(0)).attr('fill','red')
         }
-        demo4();    
+        demo4();  
+        //折线图
+        function demo5(){
+            var width=document.querySelector('#demo5').offsetWidth-200;
+            var height=400;
+            var padding=20;
+
+            var oSvg=d3.select('#demo5').append('svg');
+            oSvg.attr('width',width).attr('height',height).style('padding',padding);
+        }  
+        demo5();
         /*
         *params
         *id       图片元素的id
