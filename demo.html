@@ -23,7 +23,6 @@
     <hr>
     <p>QQ Plot</p>
     <div id="demo4"></div>
-    <hr>
 
     <!--wrap-->
     <div id="wrap">
@@ -183,7 +182,7 @@
             for(var j=0;j<5;j++){
                 let tempObj={};
                 tempObj.x=xScale(rnd(0,5.5));
-                tempObj.y=xScale(rnd(0,6));
+                tempObj.y=yScale(rnd(0,6));
                 maskData.push(tempObj);
             }
             //添加坐标轴
