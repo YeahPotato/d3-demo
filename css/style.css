@@ -1,0 +1,12 @@
+p{
+    color: red;
+    backgorund:"#fff"
+}
+.axis{
+    stroke:#000;
+    stroke-width: 0.2;
+}
+.stick{
+    stroke: #000;
+    stroke-width: 0.2;
+}

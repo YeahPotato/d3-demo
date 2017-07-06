@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>d3</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        p{text-align: center;}
+        svg{display: block; margin: 20px auto; border: 1px solid #ccc;}
+        circle.active{stroke-width:2; stroke:"red";}
+    </style>
+</head>
+
+<body>
+    <p>demo1</p>
+    <div id="demo1"></div>
+    <hr>
+    <p>demo2</p>
+    <div id="demo2"></div>
+    <hr>
+    <p>demo3</p>
+    <div id="demo3"></div>
+    <hr>
+    <p>QQ Plot</p>
+    <div id="demo4"></div>
+    <hr>
+
+    <!--wrap-->
+    <div id="wrap">
+    </div>
+    <script src="js/d3.js"></script>
+    <script>
+        //demo1
+        function demo1(){
+            var dataArr=[10,20,30,50,60];
+            var dataHeight = 25;
+
+            d3.select('#demo1').append('svg')
+            .attr('height',100)
+            .attr('width',300)
+            .selectAll('rect')
+            .data(dataArr)
+            .enter()
+            .append('rect')
+            .attr('width',function(item,index){
+                return item;
+            })
+            .attr('height',dataHeight-2)
+            .attr('x',0)
+            .attr('y',function(d,i){
+                return i*dataHeight
+            })
+        }
+        demo1()
+        //demo2
+        function demo2(){
+            var dataArr=[20,30,40];
+            var width=40;
+
+            d3.select('#demo2').append('svg')
+            .attr("height",300)
+            .attr("width",300)
+            .selectAll('rect')
+            .data(dataArr)
+            .enter()
+            .append('rect')
+            .attr('width',width-1)
+            .attr("height",function(item,index){
+                return item
+            })
+            .attr('x',function(d,i){
+                return i*width-1
+            })
+            .attr('y',function(d,i){
+                return 300-d;
+            })
+        }
+        demo2()
+        //demo3-直方图
+        function demo3(){
+            var dataArr=[160,560,662,93,62,450,12,156,52,123,965,32,741,256,12,666,41,3];
+            var width=40;
+            //scale
+            let yScale = d3.scaleLinear()
+                        .domain([0,d3.max(dataArr,function(d){
+                            return d
+                        })])
+                        .range([0,300]);
+            let xScale = d3.scaleBand()
+                        .domain(d3.range(dataArr.length))
+                        .range([0,600]);
+            //创建坐标轴
+                //x
+            var axis=d3.axisBottom(xScale);
+                        
+            //svg
+            var oSvg=d3.select('#demo3').append('svg');
+
+            //画坐标轴
+            oSvg.append('g').call(axis).attr('transform','translate(0,350)');
+            //创建画布
+            oSvg.attr('width',600)
+            .attr('height',350)
+            .style('padding',20+'px')
+            .selectAll('rect')
+            .data(dataArr)
+            .enter()
+
+            .append('rect')
+            .attr('width',function(){
+                return xScale.bandwidth()-2
+            })
+            .attr('height',function(d,i){
+                return yScale(d);
+            })
+            .attr('transform', function(d) {
+                return `translate(0, ${yScale(-d)})`
+            })
+            .attr('x',function(d,i){
+                return xScale(i)
+            })
+            .attr('y',350)
+            .on('mouseover',function(d,i){
+                d3.select(this).style('opacity','0.6')
+            })
+            .on('mouseout',function(){
+                d3.selectAll('rect').style('opacity','1');
+            })
+
+            oSvg.append('g')
+            .attr('name','tips')
+            .selectAll('text')
+            .data(dataArr)
+            .enter()
+            .append('text')
+
+            .text(function(d,i){
+                return d
+            })
+            .attr('x',function(d,i){
+                return xScale(i)+15
+            })
+            .attr('fill','#000')
+            .attr("text-anchor","middle")
+    		.style("font-size",12)
+            .style('font-weight','bold')
+            .attr('transform', function(d) {
+                return `translate(0, ${yScale(-d)-10})`
+            })
+            .attr('y',350)
+            
+        }
+        demo3();
+        //QQ plot
+        function demo4(){
+            var data=[];
+            var maskData=[];
+            function rnd(n,m){
+                return Math.random()*(m-n)+n;
+            }
+            for(var i=0;i<100;i++){
+                let tempObj={};
+                tempObj.x=rnd(0,5.5);
+                tempObj.y=rnd(0,6);
+                data.push(tempObj);
+            }
+            
+            var width=400;
+            var height=400;
+            var padding=30;
+            //x比例尺
+            var xScale=d3.scaleLinear()
+                        .domain([0,d3.max(data,function(d){
+                            return d.x
+                        })])
+                        .range([padding,width-padding*2]);
+            //y比例尺
+            var yScale=d3.scaleLinear()
+                        .domain([0,d3.max(data,function(d){
+                            return d.y
+                        })])
+                        .range([height-padding,padding]);
+            for(var j=0;j<5;j++){
+                let tempObj={};
+                tempObj.x=xScale(rnd(0,5.5));
+                tempObj.y=xScale(rnd(0,6));
+                maskData.push(tempObj);
+            }
+            //添加坐标轴
+            var xAxis=d3.axisBottom(xScale).ticks(10);
+            var yAxis=d3.axisLeft(yScale).ticks(5);
+
+            var oSvg=d3.select('#demo4').append('svg');
+            
+            oSvg.append('g').call(xAxis).attr('transform','translate(0,'+(height-padding)+')').append('text').text('Expected -Log10(p)').attr('transform','translate('+(width/2-padding)+','+(xScale(0)+10)+')')
+            .attr('fill','#333').style('font-size','12px').style('font-weight','bold');
+
+            oSvg.append('g').call(yAxis).attr('transform','translate('+padding+',0)').append('text').text('Observed -Log10(p)')
+            .attr('transform','translate('+(-padding-5)+','+(height/2-padding)+') rotate(-90)')
+            .attr('fill','#333').style('font-size','12px')
+            .attr('width','10').style('font-weight','bold');
+            //svg
+            oSvg.attr('width',width).attr('height',height).style('padding',padding+'px');
+
+            //添加遮罩
+            var maskStr='';
+            maskStr=JSON.stringify(maskData);
+            maskStr=maskStr.substring(1,maskStr.length-2);
+            maskStr=maskStr.replace(/\{"x":/g,'');
+            maskStr=maskStr.replace(/\"y":/g,'');
+            maskStr=maskStr.replace(/\},/g,' ');
+
+            oSvg.append('g').append('polygon')
+                .data(maskData)
+                .attr('points',maskStr)
+                .style('fill','#ccc')
+
+            //基准线
+            oSvg.append('g').append('line')
+                .attr('x1',xScale(0)).attr('y1',yScale(0))
+                .attr('x2',xScale(5.0)).attr('y2',yScale(5.0))
+                .style('stroke','red')
+                .style('stroke-width','2')
+            //添加点
+            oSvg.append('g').selectAll('circle')
+                .data(data)
+                .enter()
+                .append('circle')
+                .attr('cx',function(d,i){
+                    return xScale(d.x);
+                })
+                .attr('cy',function(d){
+                    return yScale(d.y);
+                })
+                .attr('data-x',function(d){
+                    return d.x
+                })
+                .attr('data-y',function(d){
+                    return d.y
+                })
+                .attr('title',function(d){
+                    return 'Expected -log10:'+d.x+'\nObserved -log10(p):'+d.y
+                })
+                .attr('class','point')
+                .attr('r','4')
+                .attr('fill','#fff')
+                .attr('stroke','blue')
+                .attr('stroke-width','2')
+                .on('mouseover',function(){
+                    console.log(d3.event)
+                    var x=d3.event.pageX;
+                    var y=d3.event.pageY;
+                    console.log(x+'   '+y)
+                    d3.select('.tooltip').style('left',x)
+                                        .style('top',y)
+                    d3.select(this).attr('stroke','red')
+                })
+                .on('mouseout',function(){
+                    d3.selectAll('.point').attr('stroke','blue');
+                })
+            //tooltip
+            d3.select('#demo4').append('div')
+                .attr('class','tooltip')
+                .style('position','absolute')
+
+            //原点
+            //oSvg.append('circle').attr('r',10).attr('cx',xScale(0)).attr('cy',yScale(0)).attr('fill','red')
+        }
+        demo4();    
+        /*
+        *params
+        *id       图片元素的id
+        *name     图片保存的名字
+        *type     图片保存类型  默认png  可选参数(jpeg，png)
+        *cross    Boolean(true false->default)图片是否跨域(跨域需要服务器设置，还要设置元素自身的跨域属性 crossorgin anonymous)
+        *callback 回调
+        */
+        
+        function downLoadImg(options){
+            var id=options.id;
+            var name=options.name || "download";
+            var type=options.type || "png";   
+            var crossorgin=options.cross || false;
+            var callback=options.callback || null;
+            var oImg=new Image();
+            var dImg=document.querySelector('#'+id);
+            if(crossorgin)oImg.setAttribute('crossorgin','anonymous');
+            oImg.src=dImg.src;
+            oImg.width=dImg.width;
+            oImg.height=dImg.height;
+            oImg.onload=function(){
+                var canvas=document.createElement('canvas');
+                var gt=canvas.getContext("2d");
+                canvas.width=oImg.width;
+                canvas.height=oImg.height;
+                gt.drawImage(oImg,0,0);
+                var baseSrc=canvas.toDataURL('image/'+type);
+                var a=document.createElement('a');
+                a.href=baseSrc;
+                a.download=name;
+                a.click();
+                callback && callback();
+            }
+        }
+    </script>
+</body>
+
+</html>
