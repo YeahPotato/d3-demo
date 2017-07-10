@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="js/d3.js"></script>
+</head>
+
+<body>
+    <script>
+        //通用变量
+        var width=500,height=500,margin=20,g_width=400,g_height=400;
+        //定义颜色比例
+        var color=d3.scaleOrdinal(d3.schemeCategory20);
+        //生成力导向模型
+        var forceChart=d3.forceSimulation()
+            .force('charge',d3.forceManyBody())
+            .force('link',d3.forceLink())
+            .force('center',d3.forceCenter(g_width/2,g_height/2))
+        //数据转换
+        d3.json('data.json',function(error,data){
+            if(error) throw error;
+            console.log(data);
+        })
+    </script>
+</body>
+
+</html>

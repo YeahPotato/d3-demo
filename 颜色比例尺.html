@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="js/d3.js"></script>
+        <style>
+        </style>
+    </head>
+    <body>
+		<svg width="1800"></svg>
+        <script>
+			/*定义一个颜色比例尺，返回一个函数，函数根据不同的参数生成不同的随机色，相同的参数颜色保持一致*/
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+		console.log(color)
+		var data=[1,2,3,4,5,6,7,8,9,6,7,8,9]
+		d3.select('body').select('svg').selectAll('circle')
+				.data(data,function(d){
+					return d
+				})
+				.enter()
+				.append('circle')
+				.attr('cy',40)
+				.attr('cx',function(d,i){
+					return i*40+20
+				})
+				.attr('r',10)
+				.attr('fill',function(d,i){
+					return color(d)
+				})
+        </script>
+    </body>
+</html>
