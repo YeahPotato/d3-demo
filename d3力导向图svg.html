@@ -25,10 +25,10 @@
         //生成力导图模型
 
         var manyBody = d3.forceManyBody();
-        //排斥力
-        manyBody.strength(-300)
+        //作用力
+        manyBody.strength(-200)
         manyBody.distanceMax(1000)
-        manyBody.distanceMin(500)
+        manyBody.distanceMin(100)
         var simulation = d3.forceSimulation()
             .force('link', d3.forceLink().id(function (d) { return d.id }))
             .force('charge', manyBody)
@@ -44,9 +44,9 @@
                 .enter()
                 .append('line')
                 .attr('stroke-width', function (d) {
-                    return Math.sqrt(d.value) * 0.5
+                    return Math.sqrt(d.value) * 0.7
                 })
-                .attr('stroke', '#33fe00')
+                .attr('stroke', '#666')
             //生成节点
             var node = d3.select('svg').append('g')
                 .attr('class', 'nodes')
@@ -59,9 +59,9 @@
                 })
                 .attr('fill', function (d) {
                     if(d.isroot){
-                        return "#017abb"
+                        return "blue"
                     }else{
-                        return d.istwo?"#333":"red";
+                        return d.istwo?"#acb438":"#9833b0";
                     }
                 })
                 .call(d3.drag()
@@ -77,7 +77,7 @@
             simulation.force("link")
                 .links(graph.links)
                 .distance(function () {
-                    return 100 * (Math.random() + 0.1)
+                    return 120 * (Math.random() + 0.1)
                 });
 
             function ticked() {
@@ -130,7 +130,7 @@
         * @params source（string） 当前link的出发点对应每一个node的id
         * @params target（string） 当前link的目标点对应每一个node的id
         * @params value（number） 目标otu的值，控制线宽
-        ***     id  每一个rootNode和它下面的所有非rootNode的link 为一个id(后面可能会用来取分不同样本之间的link)
+        ***     id  每一个rootNode和它下面的所有非rootNode的link 为一个id(后面可能会用来取分不同样本之间的link，现在不需要)
         */
     </script>
 </body>
