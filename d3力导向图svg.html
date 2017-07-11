@@ -36,10 +36,11 @@
                 .enter()
                 .append('line')
                 .attr('stroke-width', function (d) {
-                    return Math.sqrt(d.value) * 0.5
+                    return Math.sqrt(d.value) * 1
                 })
-                .attr('stroke', '#333')
-
+                .attr('stroke', function(d){
+                    return color(d.id)
+                })
             //生成节点
             var node = d3.select('svg').append('g')
                 .attr('class', 'nodes')
