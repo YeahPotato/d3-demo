@@ -58,7 +58,11 @@
                     return d.isroot ? 12 : 3;
                 })
                 .attr('fill', function (d) {
-                    return d.isroot ? '#017abb' : '#f40';
+                    if(d.isroot){
+                        return "#017abb"
+                    }else{
+                        return d.istwo?"#333":"red";
+                    }
                 })
                 .call(d3.drag()
                     .on("start", dragstarted)
@@ -118,14 +122,15 @@
 
         /*data2
         *nodes所有的数据点 
-        *   params id 每一个node的身份标识
-        *   params group 当前nodes所属分组，每一个样本和此样本下面的所有otu公用一个group
-        *   params isroot 当前node是否最高级
+        * @params id（string） 每一个node的名称
+        * @params isroot（Boolean） 当前node是否最高级（用来区分样本和otu）
+        * @params istwo（Boolean） 当前node是否连接多个点
         *links所有的node之间的连线
-        *   params id每一条link的标识
-        *   params source 当前link的出发点对应每一个node的id
-        *   params target 每条link的目标点
-        *   params value 目标otu的值，控制线宽
+        * @params id（number）每一条link的标识
+        * @params source（string） 当前link的出发点对应每一个node的id
+        * @params target（string） 当前link的目标点对应每一个node的id
+        * @params value（number） 目标otu的值，控制线宽
+        ***     id  每一个rootNode和它下面的所有非rootNode的link 为一个id(后面可能会用来取分不同样本之间的link)
         */
     </script>
 </body>
