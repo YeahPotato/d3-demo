@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="js/d3.js"></script>
     <style>
-
+        svg {
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 
@@ -18,15 +20,21 @@
             width = +svg.attr('width'),
             height = +svg.attr('height');
         //定义颜色比例尺
-        var color = d3.scaleOrdinal(d3.schemeCategory20);
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
 
         //生成力导图模型
+
+        var manyBody = d3.forceManyBody();
+        //排斥力
+        manyBody.strength(-300)
+        manyBody.distanceMax(1000)
+        manyBody.distanceMin(500)
         var simulation = d3.forceSimulation()
             .force('link', d3.forceLink().id(function (d) { return d.id }))
-            .force('charge', d3.forceManyBody())
+            .force('charge', manyBody)
             .force('center', d3.forceCenter(width / 2, height / 2));
 
-        d3.json('data.json', function (error, graph) {
+        d3.json('data2.json', function (error, graph) {
             if (error) throw error;
             //生成link
             var link = d3.select('svg').append('g')
@@ -36,11 +44,9 @@
                 .enter()
                 .append('line')
                 .attr('stroke-width', function (d) {
-                    return Math.sqrt(d.value) * 1
+                    return Math.sqrt(d.value) * 0.5
                 })
-                .attr('stroke', function(d){
-                    return color(d.id)
-                })
+                .attr('stroke', '#33fe00')
             //生成节点
             var node = d3.select('svg').append('g')
                 .attr('class', 'nodes')
@@ -48,9 +54,11 @@
                 .data(graph.nodes)
                 .enter()
                 .append('circle')
-                .attr('r', 5)
+                .attr('r', function (d) {
+                    return d.isroot ? 12 : 3;
+                })
                 .attr('fill', function (d) {
-                    return color(d.group);
+                    return d.isroot ? '#017abb' : '#f40';
                 })
                 .call(d3.drag()
                     .on("start", dragstarted)
@@ -58,13 +66,15 @@
                     .on("end", dragended));
             node.append('title')
                 .text(function (d) { return d.id });
-
             simulation
                 .nodes(graph.nodes)
                 .on("tick", ticked);
 
             simulation.force("link")
-                .links(graph.links);
+                .links(graph.links)
+                .distance(function () {
+                    return 100 * (Math.random() + 0.1)
+                });
 
             function ticked() {
                 link
@@ -79,7 +89,6 @@
             }
 
             function dragstarted(d) {
-                console.log(d)
                 if (!d3.event.active) simulation.alphaTarget(0.3).restart();
                 d.fx = d.x;
                 d.fy = d.y;
@@ -104,6 +113,19 @@
             4:定义ticks回调，每次操作视图,更新数据/更新视图
             svg 力导向（见2）
             demo:http://blockbuilder.org/mbostock/1212215
+        */
+
+
+        /*data2
+        *nodes所有的数据点 
+        *   params id 每一个node的身份标识
+        *   params group 当前nodes所属分组，每一个样本和此样本下面的所有otu公用一个group
+        *   params isroot 当前node是否最高级
+        *links所有的node之间的连线
+        *   params id每一条link的标识
+        *   params source 当前link的出发点对应每一个node的id
+        *   params target 每条link的目标点
+        *   params value 目标otu的值，控制线宽
         */
     </script>
 </body>
