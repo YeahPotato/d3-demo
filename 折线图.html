@@ -10,16 +10,16 @@
         svg {
             border: 1px solid #ccc;
         }
-
+        
         .text {
             font-size: 12px;
         }
-
+        
         .lengedRect {
             width: 12px;
             height: 12px;
         }
-
+        
         .lengedRectText {
             font-size: 14px;
         }
@@ -30,78 +30,63 @@
     <div id="wrap"></div>
     <script>
         //定义常量
-        var height = 400, width = 700;
-        var g_width = 500, g_height = 300, margin = 60;
+        var height = 400,
+            width = 700;
+        var g_width = 500,
+            g_height = 300,
+            margin = 60;
         var colorArr = ['red', 'blue', 'green'];
         //定义数据
-        var data = [
-            {
-                name: "geneOne",
-                data: [
-                    {
+        var data = [{
+                    name: "geneOne",
+                    data: [{
                         "SquencePerSample": 0,
                         "RarefactionMeasure": 0
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 2365,
                         "RarefactionMeasure": 102
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 80263,
                         "RarefactionMeasure": 165
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 125000,
                         "RarefactionMeasure": 369
-                    }
-                ]
-            },
-            {
-                name: "geneTwo",
-                data: [
-                    {
+                    }]
+                }, {
+                    name: "geneTwo",
+                    data: [{
                         "SquencePerSample": 0,
                         "RarefactionMeasure": 0
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 23623,
                         "RarefactionMeasure": 205
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 102263,
                         "RarefactionMeasure": 306
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 180000,
                         "RarefactionMeasure": 369
-                    }
-                ]
-            },
-            {
-                name: "geneThree",
-                data: [
-                    {
+                    }]
+                }, {
+                    name: "geneThree",
+                    data: [{
                         "SquencePerSample": 0,
                         "RarefactionMeasure": 0
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 12365,
                         "RarefactionMeasure": 109
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 100263,
                         "RarefactionMeasure": 165
-                    },
-                    {
+                    }, {
                         "SquencePerSample": 190000,
                         "RarefactionMeasure": 369
-                    }
-                ]
-            }
+                    }]
+                }
 
-        ]
-        //var allArr=data[0].data.concat(data[1].data).concat(data[2].data);
-        //创建画布
+            ]
+            //var allArr=data[0].data.concat(data[1].data).concat(data[2].data);
+            //创建画布
         var svg = d3.select('#wrap').append('svg');
         svg.attr('width', width).attr('height', height);
         //创建分组集合
@@ -117,7 +102,7 @@
         var scale_y = d3.scaleLinear()
             .domain([0, 600])
             .range([g_height, 0])
-        //定义坐标轴
+            //定义坐标轴
         var xAxis = d3.axisBottom(scale_x).ticks(3);
         var yAxis = d3.axisLeft(scale_y).ticks(5);
         var xAxisTop = d3.axisTop(scale_x).ticks(3);
@@ -176,15 +161,16 @@
         for (var j = 0; j < data.length; j++) {
             drawLine(data[j], colorArr[j], j)
         }
+
         function drawLine(lineData, color, index) {
             var line = d3.line()
-                .x(function (d) {
+                .x(function(d) {
                     return scale_x(d['SquencePerSample']);
                 })
-                .y(function (d) {
+                .y(function(d) {
                     return scale_y(d['RarefactionMeasure']);
                 })
-            //.interpolate("cardinal")
+                //.interpolate("cardinal")
             var currentLine = d3.select('.root').append('g')
                 .attr('data-name', lineData.name)
                 .attr('class', 'line');
@@ -194,9 +180,13 @@
                 .attr('fill', 'none')
                 .style('stroke-width', 2)
                 .style('stroke', color)
-                .on('click', function () {
+                .on('click', function() {
                     console.log(this)
                 })
+                .on('mouseover', function() {
+                    console.log(d3.event)
+                })
+                //append circle
             for (var u = 0; u < lineData.data.length; u++) {
                 if (u == 0) continue;
                 currentLine
