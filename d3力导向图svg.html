@@ -14,14 +14,14 @@
 </head>
 
 <body>
-    <svg width="800" height="600"></svg>
+    
     <script>
-        var svg = d3.select('svg'),
-            width = +svg.attr('width'),
-            height = +svg.attr('height');
+        var width = 800,
+            height = 600;
         //定义颜色比例尺
         var color = d3.scaleOrdinal(d3.schemeCategory10);
 
+        var svg = d3.select('body').append('svg').attr('width',width).attr('height',height);
         //生成力导图模型
 
         var manyBody = d3.forceManyBody();

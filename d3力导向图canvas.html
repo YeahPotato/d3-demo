@@ -11,7 +11,6 @@
             width: 1800px;
             height: 600px;
         }
-        
     </style>
 </head>
 
@@ -19,82 +18,84 @@
     <canvas width="960" height="500"></canvas>
     <script>
         /* //通用变量
-        var width = 500, height = 500, margin = 20, g_width = 400, g_height = 400;
-        //定义颜色比例
-        var color = d3.scaleOrdinal(d3.schemeCategory20);
-        //生成力导向模型
-        var forceChart = d3.forceSimulation()
-            .force('charge', d3.forceManyBody())
-            .force('link', d3.forceLink())
-            .force('center', d3.forceCenter(g_width / 2, g_height / 2))
-        var svg = d3.select('body').append('svg');
-        //数据转换
-        d3.json('data.json', function (error, graph) {
-            if (error) throw error;
-            var link = svg.append("g")
-                .attr("class", "links")
-                .selectAll("line")
-                .data(graph.links)
-                .enter().append("line")
-                .attr("stroke-width", function (d) { return Math.sqrt(d.value); });
+                var width = 500, height = 500, margin = 20, g_width = 400, g_height = 400;
+                //定义颜色比例
+                var color = d3.scaleOrdinal(d3.schemeCategory20);
+                //生成力导向模型
+                var forceChart = d3.forceSimulation()
+                    .force('charge', d3.forceManyBody())
+                    .force('link', d3.forceLink())
+                    .force('center', d3.forceCenter(g_width / 2, g_height / 2))
+                var svg = d3.select('body').append('svg');
+                //数据转换
+                d3.json('data.json', function (error, graph) {
+                    if (error) throw error;
+                    var link = svg.append("g")
+                        .attr("class", "links")
+                        .selectAll("line")
+                        .data(graph.links)
+                        .enter().append("line")
+                        .attr("stroke-width", function (d) { return Math.sqrt(d.value); });
 
-            var node = svg.append("g")
-                .attr("class", "nodes")
-                .selectAll("circle")
-                .data(graph.nodes)
-                .enter().append("circle")
-                .attr("r", 5)
-                .attr("fill", function (d) { return color(d.group); })
-                .call(d3.drag()
-                    .on("start", dragstarted)
-                    .on("drag", dragged)
-                    .on("end", dragended));
+                    var node = svg.append("g")
+                        .attr("class", "nodes")
+                        .selectAll("circle")
+                        .data(graph.nodes)
+                        .enter().append("circle")
+                        .attr("r", 5)
+                        .attr("fill", function (d) { return color(d.group); })
+                        .call(d3.drag()
+                            .on("start", dragstarted)
+                            .on("drag", dragged)
+                            .on("end", dragended));
 
-            forceChart.nodes(graph.nodes)
-                .on("tick",ticked)
-                .force("link")
-                .links(graph.links);
+                    forceChart.nodes(graph.nodes)
+                        .on("tick",ticked)
+                        .force("link")
+                        .links(graph.links);
 
 
-            function ticked() {
-                link
-                    .attr("x1", function (d) { return d.source.x; })
-                    .attr("y1", function (d) { return d.source.y; })
-                    .attr("x2", function (d) { return d.target.x; })
-                    .attr("y2", function (d) { return d.target.y; });
+                    function ticked() {
+                        link
+                            .attr("x1", function (d) { return d.source.x; })
+                            .attr("y1", function (d) { return d.source.y; })
+                            .attr("x2", function (d) { return d.target.x; })
+                            .attr("y2", function (d) { return d.target.y; });
 
-                node
-                    .attr("cx", function (d) { return d.x; })
-                    .attr("cy", function (d) { return d.y; });
-            }
-            function dragstarted(d) {
-                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-                d.fx = d.x;
-                d.fy = d.y;
-            }
+                        node
+                            .attr("cx", function (d) { return d.x; })
+                            .attr("cy", function (d) { return d.y; });
+                    }
+                    function dragstarted(d) {
+                        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                        d.fx = d.x;
+                        d.fy = d.y;
+                    }
 
-            function dragged(d) {
-                d.fx = d3.event.x;
-                d.fy = d3.event.y;
-            }
+                    function dragged(d) {
+                        d.fx = d3.event.x;
+                        d.fy = d3.event.y;
+                    }
 
-            function dragended(d) {
-                if (!d3.event.active) simulation.alphaTarget(0);
-                d.fx = null;
-                d.fy = null;
-            }
-        })*/
+                    function dragended(d) {
+                        if (!d3.event.active) simulation.alphaTarget(0);
+                        d.fx = null;
+                        d.fy = null;
+                    }
+                })*/
         var canvas = document.querySelector("canvas"),
             context = canvas.getContext("2d"),
             width = canvas.width,
             height = canvas.height;
 
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function (d) { return d.id; }))
+            .force("link", d3.forceLink().id(function(d) {
+                return d.id;
+            }))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter());
 
-        d3.json("data.json", function (error, graph) {
+        d3.json("data.json", function(error, graph) {
             if (error) throw error;
 
             simulation
