@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="js/d3.js"></script>
+    <style>
+        svg {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        #wrap {
+            padding-top: 120px;
+        }
+        
+        .legend text {
+            font-size: 14px;
+            font-family: "Microsoft Yahei"
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+    </div>
+    <script>
+        //定义数据
+        var drawData = {
+            "maxValue": 0.87,
+            "legends": [
+                "samplename1",
+                "samplename2",
+                "samplename3",
+                "samplename4"
+            ],
+            "data": [
+                [{
+                    "x": "samplename1",
+                    "y": "samplename1",
+                    "weight": 0,
+                    "unweight": 0
+                }],
+                [{
+                    "x": "samplename2",
+                    "y": "samplename1",
+                    "weight": 0.2,
+                    "unweight": 0.3
+                }, {
+                    "x": "samplename2",
+                    "y": "samplename2",
+                    "weight": 0,
+                    "unweight": 0
+                }],
+                [{
+                    "x": "samplename3",
+                    "y": "samplename1",
+                    "weight": 0.2,
+                    "unweight": 0.3
+                }, {
+                    "x": "samplename3",
+                    "y": "samplename2",
+                    "weight": 0.2,
+                    "unweight": 0.3
+                }, {
+                    "x": "samplename3",
+                    "y": "samplename3",
+                    "weight": 0,
+                    "unweight": 0
+                }],
+                [{
+                    "x": "samplename4",
+                    "y": "samplename1",
+                    "weight": 0.2,
+                    "unweight": 0.3
+                }, {
+                    "x": "samplename4",
+                    "y": "samplename2",
+                    "weight": 0.2,
+                    "unweight": 0.3
+                }, {
+                    "x": "samplename4",
+                    "y": "samplename3",
+                    "weight": 0.36,
+                    "unweight": 0.87
+                }, {
+                    "x": "samplename4",
+                    "y": "samplename4",
+                    "weight": 0,
+                    "unweight": 0
+                }]
+            ]
+        }
+
+        //定义常量
+        var WIDTH = 700,
+            HEIGHT = 700,
+            CONTAINERWIDTH = 500,
+            CONTAINERHEIGHT = 500,
+            OPACTITY = 0.4,
+            POLYGONACTIVECOLOR = 'blue',
+            POLYGONSTROKECOLOR = '#909090',
+            colorArr = ['#02fd80', '#6297eb'],
+            min = 0,
+            max = drawData.maxValue,
+            LEGENDWIDTH = 300,
+            LENGEDHEIGHT = 20;
+        var pWIDTH = CONTAINERWIDTH / drawData.data.length;
+
+        //创建画布
+        var svg = d3.select('#wrap').append('svg').attr('height', HEIGHT).attr('width', WIDTH)
+            .attr('xmlns', 'http://www.w3.org/2000/svg')
+            .attr('version', '1.1')
+            .attr('transform', 'rotate(-135)')
+            //创建容器
+        var g_wrap = svg.append('g')
+            .attr('class', 'container')
+            .attr('transform', 'translate(' + (WIDTH - CONTAINERWIDTH - 150) + ',-50)');
+        //定义颜色比例尺
+        var colorScale = d3.scaleLinear().domain([min, max]).range(colorArr).interpolate(d3.interpolateRgb);
+        //画图
+        g_wrap.selectAll('g')
+            .data(drawData.data)
+            .enter()
+            .append('g')
+            .attr('class', function(d, i) {
+                return 'column column' + (i + 1)
+            })
+            //创建polygon分组
+        for (var i = drawData.data.length - 1; i > -1; i--) {
+            var currentG = d3.select('.column' + (i + 1));
+            /*横向文本
+            currentG.append('text')
+                // .text(drawData.data[i][0].x)
+                .text('sam' + (i + 1))
+                .attr('text-anchor', 'left')
+                .attr('transform', 'translate(30,16)')
+                .attr('domaint-baseline', 'middle')
+                .attr('x', i * pWIDTH)
+                .attr('y', CONTAINERHEIGHT + 130)*/
+            for (var j = 0; j < drawData.data[i].length; j++) {
+                //append polygon
+                var columnItem = currentG.append('g')
+                    .attr('class', 'item_' + (i + 1) + '-' + (j + 1))
+                    .on('mouseover', function() {
+                        var currentClass = d3.select(this)._groups[0][0].classList.value;
+                        var classArr = currentClass.split('_')[1].split('-');
+                        findActiveItem(classArr);
+                    })
+                    .on('mouseout', function() {
+                        d3.selectAll('.column polygon').attr('opacity', 1)
+                    })
+                    //unweight Polygon
+                columnItem.append('polygon')
+                    .attr('points', i * pWIDTH + ',' + (CONTAINERHEIGHT - j * pWIDTH) + ' ' + ((i + 1) * pWIDTH) + ',' + (CONTAINERHEIGHT - j * pWIDTH) + ' ' + i * pWIDTH + ',' + (CONTAINERHEIGHT - (j - 1) * pWIDTH))
+                    .attr('stroke', POLYGONSTROKECOLOR)
+                    .attr('stroke-width', '1')
+                    .attr('fill', colorScale(drawData.data[i][j].unweight));
+                //weight Polygon
+                columnItem.append('polygon')
+                    .attr('points', (i + 1) * pWIDTH + ',' + (CONTAINERHEIGHT - (j - 1) * pWIDTH) + ' ' + ((i + 1) * pWIDTH) + ',' + (CONTAINERHEIGHT - j * pWIDTH) + ' ' + i * pWIDTH + ',' + (CONTAINERHEIGHT - (j - 1) * pWIDTH))
+                    .attr('stroke', POLYGONSTROKECOLOR)
+                    .attr('stroke-width', '1')
+                    .attr('fill', colorScale(drawData.data[i][j].weight));
+                //unweight text
+                columnItem.append('text')
+                    .text('unweight:' + drawData.data[i][j].unweight)
+                    .attr('class', 'unweight-text')
+                    .attr('text-anchor', 'middle')
+                    .attr('transform', 'translate(' + (i * pWIDTH + pWIDTH / 2 - 20) + ',' + (CONTAINERHEIGHT - j * pWIDTH + pWIDTH / 2 - 20) + ') rotate(135)')
+                    //weight text
+                columnItem.append('text')
+                    .text('weight:' + drawData.data[i][j].weight)
+                    .attr('class', 'weight-text')
+                    .attr('text-anchor', 'middle')
+                    .attr('transform', 'translate(' + ((i + 1) * pWIDTH - 50) + ',' + ((CONTAINERHEIGHT - (j - 1) * pWIDTH) - 45) + ') rotate(135)')
+                    .attr('x', 0)
+                    .attr('y', 0)
+
+                //append rect
+                // currentG.append('rect')
+                //     .attr('class', 'item_' + (i + 1) + '-' + (j + 1))
+                //     .attr('fill', colorScale(drawData.data[i][j].unweight))
+                //     .attr('height', pWIDTH)
+                //     .attr('width', pWIDTH)
+                //     .attr('x', i * pWIDTH)
+                //     .attr('y', CONTAINERHEIGHT - j * pWIDTH)
+                //     .attr('stroke', '#666')
+                //     .attr('stroke-width', '1')
+                //     .on('mouseover', function() {
+                //         var currentClass = d3.select(this)._groups[0][0].classList.value;
+                //         var classArr = currentClass.split('_')[1].split('-');
+                //         findActiveItem(classArr);
+                //     })
+                //     .on('mouseout', function() {
+                //         d3.selectAll('.column rect').attr('opacity', '1')
+                //     })
+
+            }
+
+        }
+        //添加labels
+        addLabels(drawData.legends);
+        //添加图例
+        addLegends(0, drawData.maxValue, colorArr);
+
+        //找到对应需要激活的元素
+        function findActiveItem(arr) {
+            var x = arr[0],
+                y = arr[1];
+            var MAX = drawData.data.length;
+            loop(x, y, MAX)
+        }
+        //循环找激活类
+        function loop(x, y, MAX) {
+            var x = +x;
+            var y = +y;
+            //纵向active
+            for (var i = 1; i < y + 1; i++) {
+                var Klass = 'item_' + x + '-' + i;
+                d3.selectAll('.' + Klass + ' polygon').attr('opacity', OPACTITY);
+            }
+            //横向active
+            if (x != MAX) {
+                for (var j = x + 1; j < MAX + 1; j++) {
+                    d3.selectAll('.item_' + j + '-' + y + ' polygon').attr('opacity', OPACTITY);
+                }
+            } else {
+                return;
+            }
+        }
+        //labels文本信息
+        function addLabels(arr) {
+            var oSvg = d3.select('svg');
+            oSvg
+                .append('g')
+                .attr('class', 'xText')
+                .selectAll('text')
+                .data(arr)
+                .enter()
+                .append('text')
+                .text(function(d) {
+                    return d
+                }).attr('text-anchor', 'middle')
+                .attr('transform', function(d, i) {
+                    return 'translate(' + (i * pWIDTH + 115) + ',' + (HEIGHT - 60) + ') rotate(90)'
+                })
+
+            //y
+            oSvg.append('g')
+                .attr('class', 'yText')
+                .selectAll('text')
+                .data(arr)
+                .enter()
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .attr('transform', function(d, i) {
+                    return 'translate(' + (WIDTH - 80) + ',' + (pWIDTH * i + 140) + ') rotate(-180)'
+                })
+                .text(function(d) {
+                    return d
+                })
+                .attr('x', 0)
+                .attr('y', 0);
+        }
+        //图例生成方法
+        function addLegends() {
+            //定义渐变
+            var oLinearG = svg
+                .append('defs')
+                .append('linearGradient')
+                .attr('id', 'linearMask');
+            oLinearG.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', colorScale(0))
+            oLinearG.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', colorScale(drawData.maxValue));
+            //添加渐变
+            svg.append('g')
+                .attr('class', 'BETADYXZS_chart_lenged')
+                .attr('transform', 'translate(400,30) rotate(135)')
+                .append('rect')
+                .attr('stroke', POLYGONSTROKECOLOR)
+                .attr('fill', 'url(#linearMask)')
+                .attr('width', LEGENDWIDTH)
+                .attr('height', LENGEDHEIGHT);
+            //添加文本信息
+            d3.select('.legend')
+                .append('text')
+                .text('0')
+                .attr('transform', 'translate(0,' + (LENGEDHEIGHT + 20) + ')')
+            d3.select('.legend')
+                .append('text')
+                .text(drawData.maxValue)
+                .attr('transform', 'translate(' + (LEGENDWIDTH - 20) + ',' + (LENGEDHEIGHT + 20) + ')')
+        }
+    </script>
+
+</body>
+
+</html>
