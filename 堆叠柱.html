@@ -1,89 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title></title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="js/d3.js"></script>
-        <style>
-            svg{border: 1px  solid #ccc;}
-        </style>
-    </head>
-    <body>
-        <script>
-            //定义默认值
-            var height=400,width=600,g_width=500,g_height=350;
 
-            var oSvg=d3.select('body').append('svg')
-                .attr('width',width)
-                .attr('height',height);
-            //默认数据
-            var data=[
-                {month: new Date(2015, 0, 1), apples: 3840, bananas: 1920, cherries: 960, dates: 400},
-                {month: new Date(2015, 1, 1), apples: 1600, bananas: 1440, cherries: 960, dates: 400},
-                {month: new Date(2015, 2, 1), apples:  640, bananas:  960, cherries: 640, dates: 400},
-                {month: new Date(2015, 3, 1), apples:  320, bananas:  480, cherries: 640, dates: 400}
-                ];
-            var colorArr=['#f40','#007acc','#81d645','#966557']
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="js/d3.js"></script>
+    <style>
+        svg {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        //定义默认值
+        var height = 400,
+            width = 600,
+            g_width = 500,
+            g_height = 350;
+
+        var oSvg = d3.select('body').append('svg')
+            .attr('width', width)
+            .attr('height', height);
+        //默认数据
+        var data = [{
+            month: new Date(2015, 0, 1),
+            apples: 3840,
+            bananas: 1920,
+            cherries: 960,
+            dates: 400
+        }, {
+            month: new Date(2015, 1, 1),
+            apples: 1600,
+            bananas: 1440,
+            cherries: 960,
+            dates: 400
+        }, {
+            month: new Date(2015, 2, 1),
+            apples: 640,
+            bananas: 960,
+            cherries: 640,
+            dates: 400
+        }, {
+            month: new Date(2015, 3, 1),
+            apples: 320,
+            bananas: 480,
+            cherries: 640,
+            dates: 400
+        }];
+        var colorArr = ['#f40', '#007acc', '#81d645', '#966557']
             //创建容器组
-            oSvg.append('g')
-                .attr('class','g_group')
-                .attr('width',g_width)
-                .attr('height',g_height)
-                .attr('transform','translate('+(width-g_width)/2+','+(height-g_height)/2+')')
+        oSvg.append('g')
+            .attr('class', 'g_group')
+            .attr('width', g_width)
+            .attr('height', g_height)
+            .attr('transform', 'translate(' + (width - g_width) / 2 + ',' + (height - g_height) / 2 + ')')
             //构建默认堆叠图
-            var stack=d3.stack()
-                .keys(['apples','bananas','cherries','dates'])
-            var serise=stack(data);
-            console.log(serise)
+        var stack = d3.stack()
+            .keys(['apples', 'bananas', 'cherries', 'dates'])
+        var serise = stack(data);
+        console.log(serise)
             //定义缩放比例
-            var height_scale=d3.scaleLinear()
-                            .domain([0,8000])
-                            .range([0,g_height])
-            var x_scale=d3.scaleLinear()
-                            .domain([0,10])
-                            .range([0,g_width])
-            var y_scale=d3.scaleLinear()
-                            .domain([0,8000])
-                            .range([g_height,0])
+        var height_scale = d3.scaleLinear()
+            .domain([0, 8000])
+            .range([0, g_height])
+        var x_scale = d3.scaleLinear()
+            .domain([0, 10])
+            .range([0, g_width])
+        var y_scale = d3.scaleLinear()
+            .domain([0, 8000])
+            .range([g_height, 0])
             //定义坐标轴
-            var xAxis=d3.axisBottom(x_scale);
-            var yAxis=d3.axisLeft(y_scale);
-            //创建坐标轴
-            d3.select('.g_group').append('g').attr('class','x').call(xAxis).attr('transform','translate(0,'+g_height+')');
-            d3.select('.g_group').append('g').attr('class','y').call(yAxis);
-            //画矩形
-            d3.select('.g_group').selectAll('g.bar')
-                .data(serise)
-                .enter()
-                .append('g')
-                .attr('class','bar')
-                .each(function(d,i){
-                    d3.select(this)
-                        .selectAll('rect')
-                        .data(d)
-                        .enter()
-                        .append('rect')
-                        .attr('width',30)
-                        .attr('height',function(p){
-                            return height_scale(p[1])
-                        })
-                        .attr('y',function(p){
-                            return y_scale(p[1])
-                        })
-                        .attr('x',function(p){
-                            return x_scale(d.index)+35
-                        })
-                        .attr('fill',function(p,l){
-                            return colorArr[l]
-                        })
-                })
+        var xAxis = d3.axisBottom(x_scale);
+        var yAxis = d3.axisLeft(y_scale);
+        //创建坐标轴
+        d3.select('.g_group').append('g').attr('class', 'x').call(xAxis).attr('transform', 'translate(0,' + g_height + ')');
+        d3.select('.g_group').append('g').attr('class', 'y').call(yAxis);
+        //画矩形
+        d3.select('.g_group').selectAll('g.bar')
+            .data(serise)
+            .enter()
+            .append('g')
+            .attr('class', 'bar')
+            .each(function(d, i) {
+                d3.select(this)
+                    .selectAll('rect')
+                    .data(d)
+                    .enter()
+                    .append('rect')
+                    .attr('width', 30)
+                    .attr('height', function(p) {
+                        return height_scale(p[1])
+                    })
+                    .attr('y', function(p) {
+                        return y_scale(p[1])
+                    })
+                    .attr('x', function(p) {
+                        return x_scale(d.index) + 35
+                    })
+                    .attr('fill', function(p, l) {
+                        return colorArr[l]
+                    })
+            })
 
-            /*d3.select('.g_group').append('circle')
-                                .attr('cx',0)
-                                .attr('cy',0)
-                                .attr('r',20)
-                                .attr('fill','red')*/
-        </script>
-    </body>
+        /*d3.select('.g_group').append('circle')
+                            .attr('cx',0)
+                            .attr('cy',0)
+                            .attr('r',20)
+                            .attr('fill','red')*/
+    </script>
+</body>
+
 </html>
