@@ -105,9 +105,10 @@
             colorArr = ['#02fd80', '#6297eb'],
             min = 0,
             max = drawData.maxValue,
-            LEGENDWIDTH = 300,
-            LENGEDHEIGHT = 20;
+            LEGENDWIDTH = CONTAINERWIDTH / drawData.data.length * 2,
+            LENGEDHEIGHT = CONTAINERWIDTH / drawData.data.length / 6;
         var pWIDTH = CONTAINERWIDTH / drawData.data.length;
+        //pWIDTH = 60;
 
         //创建画布
         var svg = d3.select('#wrap').append('svg').attr('height', HEIGHT).attr('width', WIDTH)
@@ -245,7 +246,8 @@
                     return d
                 }).attr('text-anchor', 'middle')
                 .attr('transform', function(d, i) {
-                    return 'translate(' + (i * pWIDTH + 115) + ',' + (HEIGHT - 60) + ') rotate(90)'
+                    console.log(pWIDTH)
+                    return 'translate(' + ((i + 1) * pWIDTH) + ',' + (HEIGHT - 60) + ') rotate(90)'
                 })
 
             //y
@@ -257,7 +259,7 @@
                 .append('text')
                 .attr('text-anchor', 'middle')
                 .attr('transform', function(d, i) {
-                    return 'translate(' + (WIDTH - 80) + ',' + (pWIDTH * i + 140) + ') rotate(-180)'
+                    return 'translate(' + (WIDTH - 80) + ',' + (pWIDTH * (i + 1)) + ') rotate(-180)'
                 })
                 .text(function(d) {
                     return d
